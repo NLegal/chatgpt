@@ -1,0 +1,7 @@
+CREATE TABLE proxies (
+    id SERIAL PRIMARY KEY,
+    ip_address VARCHAR(255) NOT NULL,
+    port INTEGER NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+

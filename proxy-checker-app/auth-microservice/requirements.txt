@@ -1,0 +1,14 @@
+Flask==2.1.0
+Flask-JWT
+Flask-RESTful==0.3.9
+argon2-cffi
+psycopg2-binary==2.9.1
+SQLAlchemy==1.4.31
+gunicorn==20.1.0
+bcrypt==3.2.0
+Flask-Mail==0.9.1
+pyjwt==2.3.0
+pytz==2021.3
+flask_jwt_extended
+flask_limiter
+flask_bcrypt

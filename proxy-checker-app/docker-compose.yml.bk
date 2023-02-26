@@ -1,0 +1,49 @@
+version: '3'
+
+services:
+  auth-microservice:
+    build: ./auth-microservice
+#    restart: always
+    ports:
+      - "5001:5001"
+    depends_on:
+      - db-microservice
+    command: ["gunicorn", "--bind", "0.0.0.0:5001", "wsgi:app", "--log-level", "debug", "--workers", "2", "--timeout", "300"]
+
+  proxy-checker-microservice:
+    build: ./proxy-checker-microservice
+#    restart: always
+    ports:
+      - "5002:5002"
+    command: ["gunicorn", "--bind", "0.0.0.0:5002", "wsgi:app", "--log-level", "debug", "--workers", "2", "--timeout", "300"]
+
+  proxy-filtering-microservice:
+    build: ./proxy-filtering-microservice
+#    restart: always
+    ports:
+      - "5003:5003"
+    depends_on:
+      - db-microservice
+    command: ["gunicorn", "--bind", "0.0.0.0:5003", "wsgi:app", "--log-level", "debug", "--workers", "2", "--timeout", "300"]
+
+  db-microservice:
+    build: ./db-microservice
+#    restart: always
+    ports:
+      - "5003:5003"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: MoonStorm1
+      POSTGRES_DB: proxy_checker
+    command: ["gunicorn", "--bind", "0.0.0.0:5000", "wsgi:app", "--log-level", "debug", "--workers", "2", "--timeout", "300"]
+
+  api-gateway:
+    build: ./api-gateway
+#    restart: always
+    ports:
+      - "5000:5000"
+    depends_on:
+      - auth-microservice
+      - proxy-checker-microservice
+      - proxy-filtering-microservice
+    command: ["gunicorn", "--bind", "0.0.0.0:5000", "wsgi:app", "--log-level", "debug", "--workers", "2", "--timeout", "300"]

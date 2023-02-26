@@ -1,0 +1,36 @@
+from flask import Flask, request, jsonify
+import requests
+
+app = Flask(__name__)
+AUTH_MICROSERVICE_URL = 'http://localhost:5000'
+PROXY_CHECKER_MICROSERVICE_URL = 'http://localhost:5001'
+PROXY_FILTERING_MICROSERVICE_URL = 'http://localhost:5002'
+
+@app.route('/auth', methods=['GET'])
+def authenticate_user():
+    headers = {'Authorization': request.headers.get('Authorization')}
+    response = requests.get(f'{AUTH_MICROSERVICE_URL}/auth', headers=headers)
+
+    if response.status_code == 200:
+        return jsonify(response.json())
+    else:
+        return jsonify({'error': 'Authentication failed'}), 401
+
+@app.route('/check_proxy', methods=['POST'])
+def check_proxy():
+    response = requests.post(f'{PROXY_CHECKER_MICROSERVICE_URL}/check_proxy', json=request.json)
+
+    if response.status_code == 200:
+        return jsonify(response.json())
+    else:
+        return jsonify({'error': 'Proxy checking failed'}), 500
+
+@app.route('/filter_proxies', methods=['GET'])
+def filter_proxies():
+    response = requests.get(f'{PROXY_FILTERING_MICROSERVICE_URL}/filter_proxies', params=request.args)
+
+    if response.status_code == 200:
+        return jsonify(response.json())
+    else:
+        return jsonify({'error': 'Proxy filtering failed'}), 500
+
